@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+dist-electron/
+release/
+out/
+
+# IDE
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+
+# Cache
+.eslintcache
+.cache/
+*.tsbuildinfo
+
+# Database
+*.db
+*.db-journal
+
+# Temporary files
+*.tmp
+*.temp
