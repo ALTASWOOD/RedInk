@@ -1,37 +1,32 @@
 /**
- * 顶部导航栏组件
+ * 顶部环境状态栏组件
+ * 显示当前环境状态，提供环境切换功能
  */
 
-import { Layout, Button, Switch, Space, Typography, Modal, Tooltip } from 'antd'
+import { Modal, Space, Tooltip } from 'antd'
 import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  GlobalOutlined,
-  LockOutlined,
+  CloudOutlined,
+  SafetyCertificateOutlined,
+  SwapOutlined,
+  SettingOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 import { useEnvStore } from '@stores/envStore'
 
-const { Header: AntHeader } = Layout
-const { Text } = Typography
-
-interface HeaderProps {
-  collapsed: boolean
-  onToggleCollapsed: () => void
-}
-
-export default function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
+export default function Header() {
+  const navigate = useNavigate()
   const { environment, setEnvironment, showSwitchConfirm, showConfirm, hideConfirm } = useEnvStore()
 
   const isPublic = environment === 'public'
   
   // 环境切换处理
-  const handleEnvironmentChange = (checked: boolean) => {
-    if (checked && environment === 'private') {
+  const handleEnvironmentSwitch = () => {
+    if (!isPublic) {
       // 从私域切换到公网需要确认
       showConfirm()
     } else {
-      setEnvironment(checked ? 'public' : 'private')
+      setEnvironment('private')
     }
   }
 
@@ -42,61 +37,42 @@ export default function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
 
   return (
     <>
-      <AntHeader
-        style={{
-          padding: '0 24px',
-          background: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
-        }}
-      >
-        {/* 左侧：折叠按钮 */}
-        <Button
-          type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={onToggleCollapsed}
-          style={{ fontSize: '16px', width: 48, height: 48 }}
-        />
+      <header className={`env-header ${isPublic ? 'env-public' : 'env-private'}`}>
+        {/* 左侧：环境标识 */}
+        <div className="env-header-left">
+          <span className="env-icon">
+            {isPublic ? <CloudOutlined /> : <SafetyCertificateOutlined />}
+          </span>
+          <span className="env-text">
+            {isPublic ? '公网环境' : '私域环境'}
+          </span>
+          <span className="env-desc">
+            {isPublic ? '' : '- 数据本地处理'}
+          </span>
+        </div>
 
-        {/* 右侧：环境切换 */}
-        <Space size="middle">
-          {/* 环境状态显示 */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '6px 16px',
-              borderRadius: '20px',
-              background: isPublic ? '#e6f7ff' : '#f6ffed',
-              border: `1px solid ${isPublic ? '#91d5ff' : '#b7eb8f'}`
-            }}
-          >
-            {isPublic ? (
-              <GlobalOutlined style={{ color: '#1890ff', marginRight: 8 }} />
-            ) : (
-              <LockOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-            )}
-            <Text strong style={{ color: isPublic ? '#1890ff' : '#52c41a' }}>
-              {isPublic ? '公网环境' : '私域环境'}
-            </Text>
-          </div>
-
-          {/* 环境切换开关 */}
+        {/* 右侧：操作按钮 */}
+        <div className="env-header-right">
+          {/* 环境切换按钮 */}
           <Tooltip title={isPublic ? '切换到私域环境' : '切换到公网环境'}>
-            <Switch
-              checked={isPublic}
-              onChange={handleEnvironmentChange}
-              checkedChildren="公网"
-              unCheckedChildren="私域"
-              style={{
-                backgroundColor: isPublic ? '#1890ff' : '#52c41a'
-              }}
-            />
+            <button className="env-switch-btn" onClick={handleEnvironmentSwitch}>
+              <SwapOutlined />
+              <span>切换到{isPublic ? '私域' : '公网'}</span>
+              {isPublic ? <SafetyCertificateOutlined /> : <CloudOutlined />}
+            </button>
           </Tooltip>
-        </Space>
-      </AntHeader>
+
+          {/* 设置按钮 */}
+          <Tooltip title="设置">
+            <button 
+              className="env-settings-btn" 
+              onClick={() => navigate('/settings')}
+            >
+              <SettingOutlined />
+            </button>
+          </Tooltip>
+        </div>
+      </header>
 
       {/* 环境切换确认对话框 */}
       <Modal
@@ -114,7 +90,7 @@ export default function Header({ collapsed, onToggleCollapsed }: HeaderProps) {
         okButtonProps={{ danger: true }}
       >
         <p>您即将切换到<strong>公网环境</strong>，请注意：</p>
-        <ul>
+        <ul style={{ paddingLeft: 20, margin: '12px 0' }}>
           <li>公网环境下的数据可能通过互联网传输</li>
           <li>请勿在公网环境下处理涉密文档</li>
           <li>AI 服务将使用云端 API</li>

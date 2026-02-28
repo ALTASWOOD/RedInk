@@ -9,6 +9,29 @@ import { contextBridge, ipcRenderer } from 'electron'
  * 暴露给渲染进程的 API
  */
 const electronAPI = {
+  // ==================== 窗口控制 ====================
+  window: {
+    minimize: () => ipcRenderer.invoke('window:minimize'),
+    maximize: () => ipcRenderer.invoke('window:maximize'),
+    close: () => ipcRenderer.invoke('window:close'),
+    isMaximized: () => ipcRenderer.invoke('window:isMaximized'),
+    isFullScreen: () => ipcRenderer.invoke('window:isFullScreen'),
+    toggleFullScreen: () => ipcRenderer.invoke('window:toggleFullScreen'),
+    // 监听窗口状态变化
+    onMaximizedChange: (callback: (isMaximized: boolean) => void) => {
+      ipcRenderer.on('window:maximized', (_event, isMaximized) => callback(isMaximized))
+      return () => ipcRenderer.removeAllListeners('window:maximized')
+    },
+    onFullScreenChange: (callback: (isFullScreen: boolean) => void) => {
+      ipcRenderer.on('window:fullscreen', (_event, isFullScreen) => callback(isFullScreen))
+      return () => ipcRenderer.removeAllListeners('window:fullscreen')
+    },
+    onFocusChange: (callback: (isFocused: boolean) => void) => {
+      ipcRenderer.on('window:focus', (_event, isFocused) => callback(isFocused))
+      return () => ipcRenderer.removeAllListeners('window:focus')
+    }
+  },
+
   // ==================== 文档操作 ====================
   document: {
     create: (data: unknown) => ipcRenderer.invoke('document:create', data),

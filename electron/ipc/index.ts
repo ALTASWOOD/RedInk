@@ -10,11 +10,15 @@ import { fileSystemIpcHandlers } from './file-system'
 import { databaseIpcHandlers } from './database'
 import { aiIpcHandlers } from './ai'
 import { settingsIpcHandlers } from './settings'
+import { registerWindowHandlers } from './window'
 
 /**
  * 注册所有 IPC 处理器
  */
 export function registerIpcHandlers(): void {
+  // 注册窗口控制处理器
+  registerWindowHandlers()
+
   // 注册文档相关处理器
   documentIpcHandlers.forEach((handler) => {
     ipcMain.handle(handler.channel, handler.handler)

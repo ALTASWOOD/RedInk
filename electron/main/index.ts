@@ -8,6 +8,7 @@ import { join } from 'path'
 import { registerIpcHandlers } from '../ipc'
 import { initDatabase } from '../database/connection'
 import { createMenu } from './menu'
+import { setupWindowStateListeners } from '../ipc/window'
 
 // 禁用 Electron 安全警告（仅开发环境）
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
@@ -32,6 +33,8 @@ async function createWindow(): Promise<void> {
     minHeight: 768,
     title: 'RedInk - AI公文报告编写软件',
     icon: join(__dirname, '../../public/icon.png'),
+    frame: false, // 无边框窗口
+    titleBarStyle: 'hidden', // 隐藏标题栏
     webPreferences: {
       preload: preloadPath,
       contextIsolation: true,
@@ -51,6 +54,9 @@ async function createWindow(): Promise<void> {
       mainWindow?.webContents.openDevTools()
     }
   })
+
+  // 设置窗口状态变化监听器
+  setupWindowStateListeners(mainWindow)
 
   // 窗口关闭时清理引用
   mainWindow.on('closed', () => {
