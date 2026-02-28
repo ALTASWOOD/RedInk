@@ -22,6 +22,8 @@
     "antd": "^5.20.0",
     "axios": "^1.7.2",
     "better-sqlite3": "^11.1.2",
+    "bindings": "^1.5.0",
+    "file-uri-to-path": "^2.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",
@@ -55,12 +57,21 @@
     "appId": "com.redink.app",
     "productName": "RedInk",
     "npmRebuild": false,
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**/*",
+      "node_modules/bindings/**/*",
+      "node_modules/file-uri-to-path/**/*"
+    ],
     "directories": {
       "output": "release"
     },
     "files": [
       "dist/**/*",
-      "dist-electron/**/*"
+      "dist-electron/**/*",
+      "node_modules/better-sqlite3/**/*",
+      "node_modules/bindings/**/*",
+      "node_modules/file-uri-to-path/**/*"
     ],
     "win": {
       "target": [
